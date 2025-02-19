@@ -1634,6 +1634,11 @@ function App() {
                     Buy $LAX
                   </span>
                 </SocialButton>
+                <SocialButton href="https://dexscreener.com/" target="_blank" rel="noopener noreferrer">
+                  <span>
+                    CHART
+                  </span>
+                </SocialButton>
                 <SocialButton 
                   to="/roadmap" 
                   isInternal 
