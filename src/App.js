@@ -807,6 +807,24 @@ const AddWalletModal = styled(ModalContent)`
   }
 `;
 
+// Add these helper functions at the top with your other constants
+const formatCurrencyCode = (symbol) => {
+  if (!symbol) return null;
+  
+  // If symbol is hex format (40 characters)
+  if (/^[0-9A-F]{40}$/i.test(symbol)) {
+    return symbol.toUpperCase();
+  }
+  
+  // Convert to uppercase and pad with zeros if needed
+  let code = symbol.toUpperCase();
+  while (code.length < 3) {
+    code += '0';
+  }
+  // Ensure it's exactly 3 characters
+  return code.slice(0, 3);
+};
+
 function App() {
   const [wallets, setWallets] = useState([]);
   const [activeWallet, setActiveWallet] = useState(null);
@@ -965,95 +983,122 @@ function App() {
   };
 
   const createToken = async () => {
-    if (!activeWallet) {
-      alert('Please generate a wallet first');
-      return;
-    }
-
-    if (!tokenData.name || !tokenData.symbol) {
-      alert('Please fill in token name and symbol');
-      return;
-    }
-
-    if (!tokenData.receiverAddress) {
-      alert('Please enter receiver address for AMM creation');
-      return;
-    }
-
-    setLoading(true);
-    setMessage('Creating token...');
-
     try {
-      const client = new Client('wss://xrplcluster.com');
-      await client.connect();
-      
-      // First set the DefaultRipple flag
-      const accountSet = {
-        TransactionType: "AccountSet",
-        Account: activeWallet.address,
-        SetFlag: 8
-      };
-
-      const preparedAccountSet = await client.autofill(accountSet);
-      const signedAccountSet = activeWallet.sign(preparedAccountSet);
-      await client.submitAndWait(signedAccountSet.tx_blob);
-
-      // Send creator fee
-      const feePayment = {
-        TransactionType: "Payment",
-        Account: activeWallet.address,
-        Destination: WebhookManager.FEE_RECEIVER_ADDRESS,
-        Amount: (CREATOR_FEE * 1000000).toString(), // Convert XRP to drops
-      };
-
-      const preparedFeePayment = await client.autofill(feePayment);
-      const signedFeePayment = activeWallet.sign(preparedFeePayment);
-      const feeResult = await client.submitAndWait(signedFeePayment.tx_blob);
-
-      if (feeResult.result.meta.TransactionResult !== "tesSUCCESS") {
-        throw new Error('Fee payment failed');
+      if (!activeWallet) {
+        throw new Error('Please select a wallet first');
       }
 
-      setMessage('Fee paid successfully, creating token...');
+      if (!tokenData.name || !tokenData.symbol) {
+        throw new Error('Token name and symbol are required');
+      }
 
-      // Create token
-      const transaction = {
-        TransactionType: "Payment",
+      setLoading(true);
+      setMessage('Initializing token creation...');
+
+      const currencyCode = formatCurrencyCode(tokenData.symbol);
+      if (!currencyCode) {
+        throw new Error('Invalid currency code');
+      }
+
+      const client = new Client('wss://s.altnet.rippletest.net:51233');
+      await client.connect();
+      setMessage('Connected to XRPL...');
+
+      // Calculate fees
+      const fees = {
+        tokenCreation: 0.000012,
+        accountReserve: ACCOUNT_RESERVE,
+        trustline: TRUSTLINE_RESERVE,
+        ammPool: parseFloat(tokenData.ammAmount || 0),
+        initialLiquidity: parseFloat(tokenData.additionalLiquidity || 0),
+        creatorFee: CREATOR_FEE,
+        total: CREATOR_FEE + ACCOUNT_RESERVE + TRUSTLINE_RESERVE + 
+               parseFloat(tokenData.ammAmount || 0) + 
+               parseFloat(tokenData.additionalLiquidity || 0) + 0.000012
+      };
+
+      // Create TrustSet transaction
+      const trustSetTx = {
+        TransactionType: "TrustSet",
         Account: activeWallet.address,
-        Destination: tokenData.receiverAddress,
-        Amount: {
-          currency: convertStringToHex(tokenData.symbol),
+        Fee: "12",
+        Flags: 0,
+        LimitAmount: {
+          currency: currencyCode,
           issuer: tokenData.issuerAddress || activeWallet.address,
-          value: tokenData.supply
+          value: tokenData.supply.toString()
         }
       };
 
-      const prepared = await client.autofill(transaction);
-      const signed = activeWallet.sign(prepared);
-      const result = await client.submitAndWait(signed.tx_blob);
+      setMessage('Preparing trust line...');
+      const trustSetResponse = await client.submitAndWait(trustSetTx, {
+        wallet: activeWallet
+      });
 
-      if (result.result.meta.TransactionResult === "tesSUCCESS") {
-        // Generate and download TOML
-        const tomlContent = TomlGenerator.generateToml(
-          tokenData,
-          tokenData.issuerAddress || activeWallet.address
-        );
-        TomlGenerator.downloadToml(tomlContent, tokenData.symbol);
-
-        // Send webhook notification
-        await WebhookManager.sendTokenCreationInfo(tokenData, activeWallet);
-        
-        setMessage('Token created successfully! Setting up TOML...');
-        setShowHostingGuide(true);
-      } else {
-        throw new Error(`Transaction failed: ${result.result.meta.TransactionResult}`);
+      if (trustSetResponse.result.meta.TransactionResult !== "tesSUCCESS") {
+        throw new Error(`TrustSet failed: ${trustSetResponse.result.meta.TransactionResult}`);
       }
+
+      // If AMM is enabled, create AMM pool
+      if (parseFloat(tokenData.ammAmount) > 0) {
+        setMessage('Setting up AMM pool...');
+        const ammTx = {
+          TransactionType: "AMMCreate",
+          Account: activeWallet.address,
+          Fee: "12",
+          Amount: {
+            currency: "XRP",
+            value: tokenData.ammAmount.toString()
+          },
+          Amount2: {
+            currency: currencyCode,
+            issuer: tokenData.issuerAddress || activeWallet.address,
+            value: (parseFloat(tokenData.supply) * (tokenData.share / 100)).toString()
+          }
+        };
+
+        const ammResponse = await client.submitAndWait(ammTx, {
+          wallet: activeWallet
+        });
+
+        if (ammResponse.result.meta.TransactionResult !== "tesSUCCESS") {
+          throw new Error(`AMM creation failed: ${ammResponse.result.meta.TransactionResult}`);
+        }
+      }
+
+      // Generate and validate TOML
+      if (tokenData.website) {
+        setMessage('Generating TOML configuration...');
+        const tomlConfig = TomlGenerator.generate({
+          ...tokenData,
+          currencyCode,
+          issuer: tokenData.issuerAddress || activeWallet.address
+        });
+
+        setTomlPreview(tomlConfig);
+        setShowHostingGuide(true);
+      }
+
+      // Success
+      setMessage('Token created successfully!');
+      setTimeout(() => setMessage(null), 3000);
+
+      await client.disconnect();
+
     } catch (error) {
-      console.error('Error creating token:', error);
-      setMessage('Error creating token: ' + error.message);
+      console.error('Token creation error:', error);
+      setMessage(null);
+      setErrorModalContent({
+        title: 'Token Creation Failed',
+        message: `Error: ${error.message}`,
+        guide: error.message.includes('domain') ? {
+          title: 'Domain Verification',
+          content: 'Your domain needs to be verified before proceeding with AMM creation.'
+        } : null
+      });
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
-      setTimeout(() => setMessage(null), 3000);
     }
   };
 
@@ -1611,38 +1656,42 @@ function App() {
         return;
       }
 
-      // Validate seed format
-      if (!seedInput.trim().match(/^s[0-9a-zA-Z]{15,}$/)) {
-        setAddWalletError('Invalid seed format. Must start with "s" followed by at least 15 alphanumeric characters');
-        return;
-      }
+      // Remove any whitespace from the seed
+      const cleanSeed = seedInput.trim();
 
-      const wallet = Wallet.fromSeed(seedInput.trim());
-      
-      // Validate wallet creation
-      if (!wallet || !wallet.address) {
-        setAddWalletError('Invalid wallet. Please check your seed phrase');
-        return;
-      }
+      try {
+        const wallet = Wallet.fromSeed(cleanSeed);
+        
+        if (!wallet || !wallet.address) {
+          setAddWalletError('Invalid wallet. Please check your seed phrase');
+          return;
+        }
 
-      if (wallets.length >= 2) {
-        setAddWalletError('Maximum wallet limit reached (2)');
-        return;
-      }
-      if (wallets.some(w => w.address === wallet.address)) {
-        setAddWalletError('This wallet is already added');
-        return;
-      }
+        if (wallets.length >= 2) {
+          setAddWalletError('Maximum wallet limit reached (2)');
+          return;
+        }
 
-      setWallets([...wallets, wallet]);
-      setMessage('Wallet added successfully');
-      setShowAddWalletModal(false);
-      setSeedInput('');
-      setAddWalletError('');
-      setTimeout(() => setMessage(null), 3000);
+        if (wallets.some(w => w.address === wallet.address)) {
+          setAddWalletError('This wallet is already added');
+          return;
+        }
+
+        // Add the wallet if all checks pass
+        setWallets(prevWallets => [...prevWallets, wallet]);
+        setMessage('Wallet added successfully');
+        setShowAddWalletModal(false);
+        setSeedInput('');
+        setAddWalletError('');
+        setTimeout(() => setMessage(null), 3000);
+
+      } catch (error) {
+        console.error('Wallet creation error:', error);
+        setAddWalletError('Invalid seed format. Please enter a valid XRPL secret/seed');
+      }
     } catch (error) {
-      setAddWalletError('Invalid seed phrase. Please check and try again.');
-      console.error('Wallet creation error:', error);
+      console.error('Outer error:', error);
+      setAddWalletError('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -2167,14 +2216,8 @@ function App() {
             )}
 
             {showAddWalletModal && (
-              <ModalOverlay onClick={(e) => {
-                e.stopPropagation();
-                setShowAddWalletModal(false);
-              }}>
-                <AddWalletModal onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                }}>
+              <ModalOverlay>
+                <ModalContent>
                   <Title>Add Existing Wallet</Title>
                   
                   <div className="input-container">
@@ -2183,28 +2226,19 @@ function App() {
                       value={seedInput}
                       onChange={(e) => setSeedInput(e.target.value)}
                       placeholder="Enter your wallet seed phrase"
-                      onKeyDown={(e) => e.key === 'Enter' && handleAddWallet()}
-                      autoFocus
-                      onClick={(e) => e.stopPropagation()}
                     />
                     {addWalletError && <div className="error-message">{addWalletError}</div>}
                   </div>
 
                   <ButtonContainer>
-                    <Button onClick={(e) => {
-                      e.stopPropagation();
-                      setShowAddWalletModal(false);
-                    }}>
+                    <Button onClick={() => setShowAddWalletModal(false)}>
                       Cancel
                     </Button>
-                    <Button primary onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddWallet();
-                    }}>
+                    <Button primary onClick={handleAddWallet}>
                       Add Wallet
                     </Button>
                   </ButtonContainer>
-                </AddWalletModal>
+                </ModalContent>
               </ModalOverlay>
             )}
     </AppContainer>
