@@ -914,7 +914,7 @@ function App() {
       const a = document.createElement('a');
       a.href = url;
       a.download = `wallet_${wallet.address}.txt`;
-      a.textContent = `Download wallet file for ${wallet.address}`;
+      a.setAttribute('aria-label', `Download wallet file for ${wallet.address}`);
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1660,7 +1660,7 @@ function App() {
                       </WalletInfo>
 
                       <WalletActions>
-                <Button 
+                        <Button 
                           onClick={(e) => {
                             e.stopPropagation();
                             const blob = new Blob(
@@ -1671,7 +1671,7 @@ function App() {
                             const a = document.createElement('a');
                             a.href = url;
                             a.download = `wallet_${wallet.address}.txt`;
-                            a.textContent = `Download wallet file for ${wallet.address}`;
+                            a.setAttribute('aria-label', `Download wallet file for ${wallet.address}`);
                             document.body.appendChild(a);
                             a.click();
                             document.body.removeChild(a);
@@ -1679,10 +1679,10 @@ function App() {
                           }}
                         >
                           Download Wallet
-                </Button>
+                        </Button>
                       </WalletActions>
-              </WalletCard>
-            ))}
+                    </WalletCard>
+                  ))}
                   
                   {wallets.length === 0 && (
                     <p style={{ textAlign: 'center', color: '#8b949e', marginTop: '1rem' }}>
