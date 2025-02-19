@@ -114,13 +114,14 @@ const Phase = styled.div`
 const PhaseContent = styled.div`
   width: 45%;
   padding: 2rem;
-  background: rgba(22, 27, 34, 0.8);
+  background: #161b22;
   border-radius: 16px;
   position: relative;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 255, 157, 0.2);
   transition: all 0.3s ease;
-  
+  animation: ${float} 6s ease-in-out infinite;
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 0 30px rgba(0, 255, 157, 0.2);
@@ -177,10 +178,13 @@ const PreviewButton = styled.button`
   transition: all 0.3s ease;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
+  animation: ${float} 4s ease-in-out infinite;
+  animation-delay: ${props => props.index * 0.2}s;
 
   &:hover {
     background: rgba(0, 255, 157, 0.2);
     transform: translateY(-2px);
+    animation: ${glowPulse} 2s infinite;
   }
 `;
 
