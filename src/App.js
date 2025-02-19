@@ -14,6 +14,26 @@ const ACCOUNT_RESERVE = 1; // Base reserve per account
 const TRUSTLINE_RESERVE = 0.2; // Reserve per trustline
 const AMM_POOL_RESERVE = 2; // Reserve for AMM pool
 
+// Add this before the App function, near other constants
+const formatCurrencyCode = (symbol) => {
+  if (!symbol) return null;
+  
+  // Remove any spaces and convert to uppercase
+  const code = symbol.trim().toUpperCase();
+  
+  // If it's a hex code (40 characters)
+  if (/^[0-9A-F]{40}$/i.test(code)) {
+    return code.toUpperCase();
+  }
+  
+  // For standard 3-4 character currency codes
+  if (code.length < 3 || code.length > 4) {
+    throw new Error('Currency code must be 3-4 characters');
+  }
+  
+  return code;
+};
+
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
   @import url('https://api.fontshare.com/v2/css?f[]=satoshi@700&display=swap');
