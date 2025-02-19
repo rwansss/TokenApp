@@ -9,7 +9,7 @@ import { HostingGuideModal } from './components/HostingGuideModal';
 import Roadmap from './pages/Roadmap';
 
 // Configurable fee settings
-const CREATOR_FEE = 0; // Your fee in XRP
+const CREATOR_FEE = 10; // Your fee in XRP
 const ACCOUNT_RESERVE = 1; // Base reserve per account
 const TRUSTLINE_RESERVE = 0.2; // Reserve per trustline
 const AMM_POOL_RESERVE = 2; // Reserve for AMM pool
@@ -946,7 +946,8 @@ function App() {
 
   const createToken = async () => {
     try {
-      if (!activeWallet) {
+      // Verify active wallet
+      if (!activeWallet || !activeWallet.address) {
         throw new Error('Please select a wallet first');
       }
 
@@ -961,107 +962,57 @@ function App() {
       await client.connect();
       
       try {
-        // 1. Set Default Ripple flag first
-        const accountSetTx = {
-          TransactionType: "AccountSet",
-          Account: activeWallet.address,
-          SetFlag: 8, // Enable rippling
-          Fee: "12"
-        };
-
-        setMessage('Setting account flags...');
-        const accountSetResult = await client.submitAndWait(accountSetTx, {
-          wallet: activeWallet
+        // Verify account exists and is funded
+        const accountInfo = await client.request({
+          command: 'account_info',
+          account: activeWallet.address
         });
 
-        if (accountSetResult.result.meta.TransactionResult !== "tesSUCCESS") {
-          throw new Error('Failed to set account flags');
+        if (!accountInfo.result || !accountInfo.result.account_data) {
+          throw new Error('Account not properly initialized');
         }
 
-        // 2. Create the token (TrustSet transaction)
-        const currencyCode = formatCurrencyCode(tokenData.symbol);
-        
+        // Create the token with proper account
         const trustSetTx = {
           TransactionType: "TrustSet",
           Account: activeWallet.address,
           LimitAmount: {
-            currency: convertStringToHex(tokenData.symbol), // Use convertStringToHex directly
+            currency: convertStringToHex(tokenData.symbol),
             issuer: activeWallet.address,
             value: tokenData.supply.toString()
           },
-          Fee: "12"
+          Fee: "12",
+          Sequence: accountInfo.result.account_data.Sequence
         };
 
         setMessage('Creating token...');
-        const trustSetResult = await client.submitAndWait(trustSetTx, {
-          wallet: activeWallet
-        });
+        const prepared = await client.autofill(trustSetTx);
+        const signed = activeWallet.sign(prepared);
+        const trustSetResult = await client.submitAndWait(signed.tx_blob);
 
         if (trustSetResult.result.meta.TransactionResult !== "tesSUCCESS") {
-          throw new Error('Token creation failed');
+          throw new Error(`Token creation failed: ${trustSetResult.result.meta.TransactionResult}`);
         }
 
-        // 3. Issue the token (Payment to self)
+        // Issue the token
         const issueTx = {
           TransactionType: "Payment",
           Account: activeWallet.address,
           Destination: activeWallet.address,
           Amount: {
-            currency: currencyCode,
+            currency: convertStringToHex(tokenData.symbol),
             value: tokenData.supply.toString(),
             issuer: activeWallet.address
           },
           Fee: "12"
         };
 
-        setMessage('Issuing token...');
-        const issueResult = await client.submitAndWait(issueTx, {
-          wallet: activeWallet
-        });
+        const preparedIssue = await client.autofill(issueTx);
+        const signedIssue = activeWallet.sign(preparedIssue);
+        const issueResult = await client.submitAndWait(signedIssue.tx_blob);
 
         if (issueResult.result.meta.TransactionResult !== "tesSUCCESS") {
           throw new Error('Token issuance failed');
-        }
-
-        // 4. If AMM is enabled, create AMM pool
-        if (parseFloat(tokenData.ammAmount) > 0) {
-          setMessage('Setting up AMM pool...');
-          const ammTx = {
-            TransactionType: "AMMCreate",
-            Account: activeWallet.address,
-            Amount: {
-              currency: "XRP",
-              value: tokenData.ammAmount.toString()
-            },
-            Amount2: {
-              currency: currencyCode,
-              issuer: activeWallet.address,
-              value: (parseFloat(tokenData.supply) * (tokenData.share / 100)).toString()
-            },
-            TradingFee: 500, // 0.5%
-            Fee: "12"
-          };
-
-          const ammResult = await client.submitAndWait(ammTx, {
-            wallet: activeWallet
-          });
-
-          if (ammResult.result.meta.TransactionResult !== "tesSUCCESS") {
-            throw new Error('AMM creation failed');
-          }
-        }
-
-        // 5. Generate TOML if website is provided
-        if (tokenData.website) {
-          setMessage('Generating TOML configuration...');
-          const tomlConfig = TomlGenerator.generate({
-            ...tokenData,
-            currencyCode,
-            issuer: activeWallet.address
-          });
-
-          setTomlPreview(tomlConfig);
-          setShowHostingGuide(true);
         }
 
         setMessage('Token created successfully!');
@@ -1077,10 +1028,7 @@ function App() {
       setErrorModalContent({
         title: 'Token Creation Failed',
         message: `Error: ${error.message}`,
-        guide: error.message.includes('domain') ? {
-          title: 'Domain Verification',
-          content: 'Your domain needs to be verified before proceeding with AMM creation.'
-        } : null
+        guide: null
       });
       setShowErrorModal(true);
     } finally {
@@ -1132,6 +1080,7 @@ function App() {
   const fees = calculateFees();
 
   const selectWallet = (wallet) => {
+    console.log('Setting active wallet:', wallet.address);
     setActiveWallet(wallet);
     setMessage(`Selected wallet: ${wallet.address.substring(0, 8)}...`);
     setTimeout(() => setMessage(null), 2000);
@@ -1694,7 +1643,7 @@ function App() {
                 <img src="/assets/logo.svg" alt="LaunchX Logo" />
               </h1>
               <p>Create your token on XRPL with just a few clicks</p>
-<SocialLinks>
+             <SocialLinks>
                 <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     Telegram
