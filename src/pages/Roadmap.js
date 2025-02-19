@@ -18,7 +18,6 @@ const GlobalStyle = createGlobalStyle`
     background: linear-gradient(135deg, #0a0d14 0%, #1a1f2c 100%);
     color: #ffffff;
     line-height: 1.6;
-    overflow-x: hidden;
   }
 `;
 
@@ -51,12 +50,9 @@ const RoadmapContainer = styled.div`
   color: #ffffff;
   padding: 2rem;
   position: relative;
-  overflow: hidden;
   font-family: 'Rajdhani', sans-serif;
   margin: 0;
-  width: 100vw;
-  max-width: 100%;
-  overflow-x: hidden;
+  width: 100%;
   
   &::before {
     content: '';
@@ -118,14 +114,13 @@ const Phase = styled.div`
 const PhaseContent = styled.div`
   width: 45%;
   padding: 2rem;
-  background: #161b22;
+  background: rgba(22, 27, 34, 0.8);
   border-radius: 16px;
   position: relative;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 255, 157, 0.2);
   transition: all 0.3s ease;
-  animation: ${float} 6s ease-in-out infinite;
-
+  
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 0 30px rgba(0, 255, 157, 0.2);
@@ -182,13 +177,10 @@ const PreviewButton = styled.button`
   transition: all 0.3s ease;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
-  animation: ${float} 4s ease-in-out infinite;
-  animation-delay: ${props => props.index * 0.2}s;
 
   &:hover {
     background: rgba(0, 255, 157, 0.2);
     transform: translateY(-2px);
-    animation: ${glowPulse} 2s infinite;
   }
 `;
 
