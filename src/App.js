@@ -1696,7 +1696,7 @@ function App() {
               <p>Create your token on XRPL with just a few clicks</p>
               <p className="highlight">CONTROL YOUR OWN LIQUIDITY!</p>
               <p>With every token created 50% of the fee immediately swaps for $LAX and burns the tokens</p>
-              <SocialLinks>
+  <SocialLinks>
                 <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     Telegram
@@ -1728,19 +1728,6 @@ function App() {
                   className="roadmap-button"
                 >
                   <span>
-                    Roadmap
-                  </span>
-                </SocialButton>
-              </SocialLinks>
-                <SocialButton 
-                  to="/roadmap" 
-                  isInternal 
-                  className="roadmap-button"
-                >
-                  <span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M21 3h-6.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H3c-.55 0-1 .45-1 1s.45 1 1 1h18c.55 0 1-.45 1-1s-.45-1-1-1zM12 3c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM4 19V7h16v12c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2-2zm14-2v-2H6v2h12z"/>
-                    </svg>
                     Roadmap
                   </span>
                 </SocialButton>
