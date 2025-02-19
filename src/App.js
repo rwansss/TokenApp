@@ -259,6 +259,7 @@ const Input = styled.input`
   border-radius: 8px;
   color: white;
   margin-bottom: 1rem;
+  font-size: 1rem;
   
   &:focus {
     border-color: #00ff9d;
@@ -318,12 +319,17 @@ const Button = styled.button`
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 255, 157, 0.2);
+    background: ${props => props.primary ? '#00ff9d' : 'rgba(0, 255, 157, 0.1)'};
   }
   
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
@@ -472,7 +478,6 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: ${fadeIn} 0.3s ease;
 `;
 
 const ModalContent = styled.div`
@@ -773,7 +778,33 @@ const WithdrawModal = styled(ModalContent)`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
   margin-top: 1.5rem;
+
+  button {
+    flex: 1;
+    margin: 0;
+  }
+`;
+
+// Add this new styled component with your other styled components
+const AddWalletModal = styled(ModalContent)`
+  max-width: 500px;
+  text-align: center;
+
+  .input-container {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .error-message {
+    color: #ff6b6b;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
 `;
 
 function App() {
@@ -810,6 +841,9 @@ function App() {
   const [errorModalContent, setErrorModalContent] = useState({ title: '', message: '', guide: null });
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawPercentage, setWithdrawPercentage] = useState(100);
+  const [showAddWalletModal, setShowAddWalletModal] = useState(false);
+  const [seedInput, setSeedInput] = useState('');
+  const [addWalletError, setAddWalletError] = useState('');
 
   const iconInputRef = useRef(null);
   const bannerInputRef = useRef(null);
@@ -1564,25 +1598,51 @@ function App() {
 
   // Add this new function after your existing state declarations
   const addWallet = () => {
-    const seed = prompt("Enter your wallet seed phrase:");
-    if (!seed) return;
+    setShowAddWalletModal(true);
+    setSeedInput('');
+    setAddWalletError('');
+  };
 
+  // Add this new function to handle the wallet addition
+  const handleAddWallet = () => {
     try {
-      const wallet = Wallet.fromSeed(seed);
+      if (!seedInput.trim()) {
+        setAddWalletError('Please enter a seed phrase');
+        return;
+      }
+
+      // Validate seed format
+      if (!seedInput.trim().match(/^s[0-9a-zA-Z]{15,}$/)) {
+        setAddWalletError('Invalid seed format. Must start with "s" followed by at least 15 alphanumeric characters');
+        return;
+      }
+
+      const wallet = Wallet.fromSeed(seedInput.trim());
+      
+      // Validate wallet creation
+      if (!wallet || !wallet.address) {
+        setAddWalletError('Invalid wallet. Please check your seed phrase');
+        return;
+      }
+
       if (wallets.length >= 2) {
-        alert('Maximum wallet limit reached (2)');
+        setAddWalletError('Maximum wallet limit reached (2)');
         return;
       }
       if (wallets.some(w => w.address === wallet.address)) {
-        alert('This wallet is already added');
+        setAddWalletError('This wallet is already added');
         return;
       }
 
       setWallets([...wallets, wallet]);
       setMessage('Wallet added successfully');
+      setShowAddWalletModal(false);
+      setSeedInput('');
+      setAddWalletError('');
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      alert('Invalid seed phrase. Please check and try again.');
+      setAddWalletError('Invalid seed phrase. Please check and try again.');
+      console.error('Wallet creation error:', error);
     }
   };
 
@@ -1601,7 +1661,7 @@ function App() {
               <p>Create your token on XRPL with just a few clicks</p>
               <p className="highlight">CONTROL YOUR OWN LIQUIDITY!</p>
               <p>With every token created 50% of the fee immediately swaps for $LAX and burns the tokens</p>
-              <SocialLinks>
+<SocialLinks>
                 <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     Telegram
@@ -2103,6 +2163,48 @@ function App() {
                     </Button>
                   </ButtonContainer>
                 </WithdrawModal>
+              </ModalOverlay>
+            )}
+
+            {showAddWalletModal && (
+              <ModalOverlay onClick={(e) => {
+                e.stopPropagation();
+                setShowAddWalletModal(false);
+              }}>
+                <AddWalletModal onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}>
+                  <Title>Add Existing Wallet</Title>
+                  
+                  <div className="input-container">
+                    <Input
+                      type="text"
+                      value={seedInput}
+                      onChange={(e) => setSeedInput(e.target.value)}
+                      placeholder="Enter your wallet seed phrase"
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddWallet()}
+                      autoFocus
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    {addWalletError && <div className="error-message">{addWalletError}</div>}
+                  </div>
+
+                  <ButtonContainer>
+                    <Button onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAddWalletModal(false);
+                    }}>
+                      Cancel
+                    </Button>
+                    <Button primary onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddWallet();
+                    }}>
+                      Add Wallet
+                    </Button>
+                  </ButtonContainer>
+                </AddWalletModal>
               </ModalOverlay>
             )}
     </AppContainer>
