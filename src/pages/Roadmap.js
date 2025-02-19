@@ -53,23 +53,117 @@ const GlobalStyle = createGlobalStyle`
 
 const RoadmapContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0d14 0%, #1a1f2c 100%);
+  background: #0a0d14;
   color: #ffffff;
-  padding: 2rem;
+  padding: 4rem 2rem;
   position: relative;
 `;
 
 const Header = styled.header`
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 6rem;
   
   h1 {
     font-family: 'Satoshi', sans-serif;
     font-size: 4rem;
-    background: linear-gradient(90deg, #00ff9d, #00a3ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 1rem;
+    color: #00ff9d;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+  }
+`;
+
+const Timeline = styled.div`
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+  padding-left: 3rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #00ff9d;
+  }
+`;
+
+const Phase = styled.div`
+  position: relative;
+  margin-bottom: 6rem;
+  padding-left: 2rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -3rem;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background: #00ff9d;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.5);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const PhaseTitle = styled.h2`
+  color: #00ff9d;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  font-family: 'Satoshi', sans-serif;
+`;
+
+const PhaseContent = styled.div`
+  background: rgba(0, 255, 157, 0.05);
+  border: 1px solid rgba(0, 255, 157, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+`;
+
+const FeatureList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+
+  li {
+    color: #8b949e;
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+
+    &::before {
+      content: '•';
+      color: #00ff9d;
+      position: absolute;
+      left: 0;
+    }
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+`;
+
+const FeatureButton = styled.button`
+  background: transparent;
+  border: 1px solid #00ff9d;
+  color: #00ff9d;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(0, 255, 157, 0.1);
+    transform: translateY(-2px);
   }
 `;
 
@@ -92,55 +186,6 @@ const BackButton = styled(Link)`
   }
 `;
 
-const PhaseGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-`;
-
-const PhaseCard = styled.div`
-  background: rgba(22, 27, 34, 0.95);
-  border-radius: 16px;
-  padding: 2rem;
-  border: 1px solid rgba(0, 255, 157, 0.2);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-    border-color: #00ff9d;
-    box-shadow: 0 8px 32px rgba(0, 255, 157, 0.1);
-  }
-
-  h2 {
-    color: #00ff9d;
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    font-family: 'Satoshi', sans-serif;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-
-    li {
-      margin-bottom: 1rem;
-      padding-left: 1.5rem;
-      position: relative;
-      color: #8b949e;
-
-      &:before {
-        content: '•';
-        color: #00ff9d;
-        position: absolute;
-        left: 0;
-      }
-    }
-  }
-`;
-
 function Roadmap() {
   return (
     <>
@@ -148,54 +193,78 @@ function Roadmap() {
       <RoadmapContainer>
         <BackButton to="/">← Back to Home</BackButton>
         <Header>
-          <h1>LAUNCHX Roadmap</h1>
+          <h1>LAUNCHX ROADMAP</h1>
         </Header>
         
-        <PhaseGrid>
-          <PhaseCard>
-            <h2>Phase 1: Launch of LAUNCHX $LAX</h2>
-            <ul>
-              <li>Initial token launch on XRPL</li>
-              <li>Token Creator Platform Release</li>
-              <li>Website and Documentation</li>
-              <li>Marketing Campaigns</li>
-              <li>Partnership Announcements</li>
-            </ul>
-          </PhaseCard>
+        <Timeline>
+          <Phase>
+            <PhaseTitle>Phase 1: Launch of LAUNCHX $LAX</PhaseTitle>
+            <PhaseContent>
+              <FeatureList>
+                <li>Initial token launch on XRPL</li>
+                <li>Token Creator Platform Release</li>
+                <li>Website and Documentation</li>
+                <li>Marketing Campaigns</li>
+                <li>Partnership Announcements</li>
+              </FeatureList>
+              <ButtonGroup>
+                <FeatureButton>Token Creator</FeatureButton>
+                <FeatureButton>Launch Features</FeatureButton>
+              </ButtonGroup>
+            </PhaseContent>
+          </Phase>
 
-          <PhaseCard>
-            <h2>Phase 2: Auto Sniper Release</h2>
-            <ul>
-              <li>Auto Sniper Tool Launch</li>
-              <li>YouTube Channel Creation</li>
-              <li>Comprehensive Guide Videos</li>
-              <li>Enhanced Trading Features</li>
-              <li>Community Rewards Program</li>
-            </ul>
-          </PhaseCard>
+          <Phase>
+            <PhaseTitle>Phase 2: Auto Sniper Release</PhaseTitle>
+            <PhaseContent>
+              <FeatureList>
+                <li>Auto Sniper Tool Launch</li>
+                <li>YouTube Channel Creation</li>
+                <li>Comprehensive Guide Videos</li>
+                <li>Enhanced Trading Features</li>
+                <li>Community Rewards Program</li>
+              </FeatureList>
+              <ButtonGroup>
+                <FeatureButton>Auto Sniper</FeatureButton>
+                <FeatureButton>Trading Guides</FeatureButton>
+              </ButtonGroup>
+            </PhaseContent>
+          </Phase>
 
-          <PhaseCard>
-            <h2>Phase 3: Copy Trader Platform</h2>
-            <ul>
-              <li>Copy Trader Platform Release</li>
-              <li>Advanced Trading Analytics</li>
-              <li>Portfolio Management Tools</li>
-              <li>Performance Tracking</li>
-              <li>Social Trading Features</li>
-            </ul>
-          </PhaseCard>
+          <Phase>
+            <PhaseTitle>Phase 3: Copy Trader Platform</PhaseTitle>
+            <PhaseContent>
+              <FeatureList>
+                <li>Copy Trader Platform Release</li>
+                <li>Advanced Trading Analytics</li>
+                <li>Portfolio Management Tools</li>
+                <li>Performance Tracking</li>
+                <li>Social Trading Features</li>
+              </FeatureList>
+              <ButtonGroup>
+                <FeatureButton>Copy Trading</FeatureButton>
+                <FeatureButton>Analytics Suite</FeatureButton>
+              </ButtonGroup>
+            </PhaseContent>
+          </Phase>
 
-          <PhaseCard>
-            <h2>Phase 4: Web Apps & Expansion</h2>
-            <ul>
-              <li>Advanced Web Applications</li>
-              <li>Mobile App Development</li>
-              <li>Cross-chain Integration</li>
-              <li>Advanced Trading Bots</li>
-              <li>Institutional Tools</li>
-            </ul>
-          </PhaseCard>
-        </PhaseGrid>
+          <Phase>
+            <PhaseTitle>Phase 4: Web Apps & Expansion</PhaseTitle>
+            <PhaseContent>
+              <FeatureList>
+                <li>Advanced Web Applications</li>
+                <li>Mobile App Development</li>
+                <li>Cross-chain Integration</li>
+                <li>Advanced Trading Bots</li>
+                <li>Institutional Tools</li>
+              </FeatureList>
+              <ButtonGroup>
+                <FeatureButton>Web Apps</FeatureButton>
+                <FeatureButton>Trading Bots</FeatureButton>
+              </ButtonGroup>
+            </PhaseContent>
+          </Phase>
+        </Timeline>
       </RoadmapContainer>
     </>
   );
