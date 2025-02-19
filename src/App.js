@@ -1582,7 +1582,7 @@ function App() {
               <p className="highlight">CONTROL YOUR OWN LIQUIDITY!</p>
               <p>With every token created 50% of the fee immediately swaps for $LAX and burns the tokens</p>
               <SocialLinks>
-                <SocialButton href="https://t.me/your_telegram" target="_blank" rel="noopener noreferrer">
+                <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.623 4.823-4.35c.212-.19-.046-.295-.324-.105l-5.96 3.736-2.525-.787c-.55-.172-.56-.547.114-.81l9.864-3.8c.46-.173.86.107.818.644z"/>
@@ -1590,7 +1590,7 @@ function App() {
                     Telegram
                   </span>
                 </SocialButton>
-                <SocialButton href="https://twitter.com/your_twitter" target="_blank" rel="noopener noreferrer">
+                <SocialButton href="https://x.com/LaunchXRPL" target="_blank" rel="noopener noreferrer">
                   <span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 2.313 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 2.093 4.568 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z"/>
@@ -1598,7 +1598,7 @@ function App() {
                     Twitter
                   </span>
                 </SocialButton>
-                <SocialButton href="https://discord.gg/your_discord" target="_blank" rel="noopener noreferrer">
+                <SocialButton href="https://discord.gg/NhZMfCkQ9Q" target="_blank" rel="noopener noreferrer">
                   <span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 1 1.226-1.994.076.076 0 0 1-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 0-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.398.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.225 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
@@ -1606,7 +1606,7 @@ function App() {
                     Discord
                   </span>
                 </SocialButton>
-                <SocialButton href="https://app.saucerswap.finance/swap/HBAR/0.0.2455775" target="_blank" rel="noopener noreferrer">
+                <SocialButton href="https://firstledger.net/" target="_blank" rel="noopener noreferrer">
                   <span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
