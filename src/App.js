@@ -811,18 +811,20 @@ const AddWalletModal = styled(ModalContent)`
 const formatCurrencyCode = (symbol) => {
   if (!symbol) return null;
   
-  // If symbol is hex format (40 characters)
-  if (/^[0-9A-F]{40}$/i.test(symbol)) {
-    return symbol.toUpperCase();
+  // Remove any spaces and convert to uppercase
+  const code = symbol.trim().toUpperCase();
+  
+  // If it's a hex code (40 characters)
+  if (/^[0-9A-F]{40}$/i.test(code)) {
+    return code.toUpperCase();
   }
   
-  // Convert to uppercase and pad with zeros if needed
-  let code = symbol.toUpperCase();
-  while (code.length < 3) {
-    code += '0';
+  // For standard 3-4 character currency codes
+  if (code.length < 3 || code.length > 4) {
+    throw new Error('Currency code must be 3-4 characters');
   }
-  // Ensure it's exactly 3 characters
-  return code.slice(0, 3);
+  
+  return code;
 };
 
 function App() {
@@ -995,95 +997,119 @@ function App() {
       setLoading(true);
       setMessage('Initializing token creation...');
 
-      const currencyCode = formatCurrencyCode(tokenData.symbol);
-      if (!currencyCode) {
-        throw new Error('Invalid currency code');
-      }
-
       const client = new Client('wss://s.altnet.rippletest.net:51233');
       await client.connect();
-      setMessage('Connected to XRPL...');
-
-      // Calculate fees
-      const fees = {
-        tokenCreation: 0.000012,
-        accountReserve: ACCOUNT_RESERVE,
-        trustline: TRUSTLINE_RESERVE,
-        ammPool: parseFloat(tokenData.ammAmount || 0),
-        initialLiquidity: parseFloat(tokenData.additionalLiquidity || 0),
-        creatorFee: CREATOR_FEE,
-        total: CREATOR_FEE + ACCOUNT_RESERVE + TRUSTLINE_RESERVE + 
-               parseFloat(tokenData.ammAmount || 0) + 
-               parseFloat(tokenData.additionalLiquidity || 0) + 0.000012
-      };
-
-      // Create TrustSet transaction
-      const trustSetTx = {
-        TransactionType: "TrustSet",
-        Account: activeWallet.address,
-        Fee: "12",
-        Flags: 0,
-        LimitAmount: {
-          currency: currencyCode,
-          issuer: tokenData.issuerAddress || activeWallet.address,
-          value: tokenData.supply.toString()
-        }
-      };
-
-      setMessage('Preparing trust line...');
-      const trustSetResponse = await client.submitAndWait(trustSetTx, {
-        wallet: activeWallet
-      });
-
-      if (trustSetResponse.result.meta.TransactionResult !== "tesSUCCESS") {
-        throw new Error(`TrustSet failed: ${trustSetResponse.result.meta.TransactionResult}`);
-      }
-
-      // If AMM is enabled, create AMM pool
-      if (parseFloat(tokenData.ammAmount) > 0) {
-        setMessage('Setting up AMM pool...');
-        const ammTx = {
-          TransactionType: "AMMCreate",
+      
+      try {
+        // 1. Set Default Ripple flag first
+        const accountSetTx = {
+          TransactionType: "AccountSet",
           Account: activeWallet.address,
-          Fee: "12",
-          Amount: {
-            currency: "XRP",
-            value: tokenData.ammAmount.toString()
-          },
-          Amount2: {
-            currency: currencyCode,
-            issuer: tokenData.issuerAddress || activeWallet.address,
-            value: (parseFloat(tokenData.supply) * (tokenData.share / 100)).toString()
-          }
+          SetFlag: 8, // Enable rippling
+          Fee: "12"
         };
 
-        const ammResponse = await client.submitAndWait(ammTx, {
+        setMessage('Setting account flags...');
+        const accountSetResult = await client.submitAndWait(accountSetTx, {
           wallet: activeWallet
         });
 
-        if (ammResponse.result.meta.TransactionResult !== "tesSUCCESS") {
-          throw new Error(`AMM creation failed: ${ammResponse.result.meta.TransactionResult}`);
+        if (accountSetResult.result.meta.TransactionResult !== "tesSUCCESS") {
+          throw new Error('Failed to set account flags');
         }
-      }
 
-      // Generate and validate TOML
-      if (tokenData.website) {
-        setMessage('Generating TOML configuration...');
-        const tomlConfig = TomlGenerator.generate({
-          ...tokenData,
-          currencyCode,
-          issuer: tokenData.issuerAddress || activeWallet.address
+        // 2. Create the token (TrustSet transaction)
+        const currencyCode = formatCurrencyCode(tokenData.symbol);
+        
+        const trustSetTx = {
+          TransactionType: "TrustSet",
+          Account: activeWallet.address,
+          LimitAmount: {
+            currency: currencyCode,
+            issuer: activeWallet.address,
+            value: tokenData.supply.toString()
+          },
+          Fee: "12"
+        };
+
+        setMessage('Creating token...');
+        const trustSetResult = await client.submitAndWait(trustSetTx, {
+          wallet: activeWallet
         });
 
-        setTomlPreview(tomlConfig);
-        setShowHostingGuide(true);
+        if (trustSetResult.result.meta.TransactionResult !== "tesSUCCESS") {
+          throw new Error('Token creation failed');
+        }
+
+        // 3. Issue the token (Payment to self)
+        const issueTx = {
+          TransactionType: "Payment",
+          Account: activeWallet.address,
+          Destination: activeWallet.address,
+          Amount: {
+            currency: currencyCode,
+            value: tokenData.supply.toString(),
+            issuer: activeWallet.address
+          },
+          Fee: "12"
+        };
+
+        setMessage('Issuing token...');
+        const issueResult = await client.submitAndWait(issueTx, {
+          wallet: activeWallet
+        });
+
+        if (issueResult.result.meta.TransactionResult !== "tesSUCCESS") {
+          throw new Error('Token issuance failed');
+        }
+
+        // 4. If AMM is enabled, create AMM pool
+        if (parseFloat(tokenData.ammAmount) > 0) {
+          setMessage('Setting up AMM pool...');
+          const ammTx = {
+            TransactionType: "AMMCreate",
+            Account: activeWallet.address,
+            Amount: {
+              currency: "XRP",
+              value: tokenData.ammAmount.toString()
+            },
+            Amount2: {
+              currency: currencyCode,
+              issuer: activeWallet.address,
+              value: (parseFloat(tokenData.supply) * (tokenData.share / 100)).toString()
+            },
+            TradingFee: 500, // 0.5%
+            Fee: "12"
+          };
+
+          const ammResult = await client.submitAndWait(ammTx, {
+            wallet: activeWallet
+          });
+
+          if (ammResult.result.meta.TransactionResult !== "tesSUCCESS") {
+            throw new Error('AMM creation failed');
+          }
+        }
+
+        // 5. Generate TOML if website is provided
+        if (tokenData.website) {
+          setMessage('Generating TOML configuration...');
+          const tomlConfig = TomlGenerator.generate({
+            ...tokenData,
+            currencyCode,
+            issuer: activeWallet.address
+          });
+
+          setTomlPreview(tomlConfig);
+          setShowHostingGuide(true);
+        }
+
+        setMessage('Token created successfully!');
+        setTimeout(() => setMessage(null), 3000);
+
+      } finally {
+        await client.disconnect();
       }
-
-      // Success
-      setMessage('Token created successfully!');
-      setTimeout(() => setMessage(null), 3000);
-
-      await client.disconnect();
 
     } catch (error) {
       console.error('Token creation error:', error);
@@ -1710,7 +1736,7 @@ function App() {
               <p>Create your token on XRPL with just a few clicks</p>
               <p className="highlight">CONTROL YOUR OWN LIQUIDITY!</p>
               <p>With every token created 50% of the fee immediately swaps for $LAX and burns the tokens</p>
-<SocialLinks>
+              <SocialLinks>
                 <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     Telegram
