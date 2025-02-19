@@ -3,9 +3,6 @@ import styled, { keyframes, createGlobalStyle } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
-  @import url('https://api.fontshare.com/v2/css?f[]=satoshi@700&display=swap');
-  
   * {
     box-sizing: border-box;
     margin: 0;
@@ -57,8 +54,10 @@ const RoadmapContainer = styled.div`
   overflow: hidden;
   font-family: 'Rajdhani', sans-serif;
   margin: 0;
-  width: 100%;
-
+  width: 100vw;
+  max-width: 100%;
+  overflow-x: hidden;
+  
   &::before {
     content: '';
     position: absolute;
@@ -69,6 +68,10 @@ const RoadmapContainer = styled.div`
     background: linear-gradient(90deg, #00ff9d, #00a3ff);
     background-size: 200% 100%;
     animation: ${gradientAnimation} 4s linear infinite;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
   }
 `;
 
