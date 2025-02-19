@@ -121,6 +121,7 @@ const PhaseContent = styled.div`
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 255, 157, 0.2);
   transition: all 0.3s ease;
+  animation: ${float} 6s ease-in-out infinite;
 
   &:hover {
     transform: translateY(-5px);
@@ -137,7 +138,7 @@ const PhaseContent = styled.div`
     background: #00ff9d;
     border-radius: 50%;
     transform: translateY(-50%);
-    box-shadow: 0 0 15px rgba(0, 255, 157, 0.5);
+    animation: ${glowPulse} 2s infinite;
   }
 `;
 
@@ -178,10 +179,13 @@ const PreviewButton = styled.button`
   transition: all 0.3s ease;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
+  animation: ${float} 4s ease-in-out infinite;
+  animation-delay: ${props => props.index * 0.2}s;
 
   &:hover {
     background: rgba(0, 255, 157, 0.2);
     transform: translateY(-2px);
+    animation: ${glowPulse} 2s infinite;
   }
 `;
 
