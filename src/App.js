@@ -625,8 +625,9 @@ const SocialLinks = styled.div`
   }
 `;
 
-const SocialButton = styled(({ isInternal, ...props }) => 
-  isInternal ? <Link {...props} /> : <a {...props} />)`
+/* eslint-disable jsx-a11y/anchor-has-content */
+const SocialButton = styled(({ isInternal, children, ...props }) => 
+  isInternal ? <Link {...props}>{children}</Link> : <a {...props}>{children}</a>)`
   font-family: 'Orbitron', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
@@ -716,6 +717,7 @@ const SocialButton = styled(({ isInternal, ...props }) =>
     transform: translateY(0);
   }
 `;
+/* eslint-enable jsx-a11y/anchor-has-content */
 
 const ErrorModal = styled(ModalContent)`
   max-width: 500px;
