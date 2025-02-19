@@ -109,17 +109,6 @@ const pulse = keyframes`
   }
 `;
 
-const slideUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
 const AppContainer = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #0a0d14 0%, #1a1f2c 100%);
