@@ -21,14 +21,9 @@ const formatCurrencyCode = (symbol) => {
   // Remove any spaces and convert to uppercase
   const code = symbol.trim().toUpperCase();
   
-  // If it's a hex code (40 characters)
-  if (/^[0-9A-F]{40}$/i.test(code)) {
-    return code.toUpperCase();
-  }
-  
-  // For standard 3-4 character currency codes
-  if (code.length < 3 || code.length > 4) {
-    throw new Error('Currency code must be 3-4 characters');
+  // Convert the currency code to hex if it's not already
+  if (!/^[0-9A-F]{40}$/i.test(code)) {
+    return convertStringToHex(code);
   }
   
   return code;
@@ -1005,7 +1000,7 @@ function App() {
           TransactionType: "TrustSet",
           Account: activeWallet.address,
           LimitAmount: {
-            currency: currencyCode,
+            currency: convertStringToHex(tokenData.symbol), // Use convertStringToHex directly
             issuer: activeWallet.address,
             value: tokenData.supply.toString()
           },
@@ -1714,7 +1709,7 @@ function App() {
                 <img src="/assets/logo.svg" alt="LaunchX Logo" />
               </h1>
               <p>Create your token on XRPL with just a few clicks</p>
-<SocialLinks>
+ <SocialLinks>
                 <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     Telegram
