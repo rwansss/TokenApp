@@ -1,6 +1,26 @@
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, createGlobalStyle } from 'styled-components';
 import { Link } from 'react-router-dom';
+
+const GlobalStyle = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
+  @import url('https://api.fontshare.com/v2/css?f[]=satoshi@700&display=swap');
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Rajdhani', sans-serif;
+    background: #0a0d14;
+    color: #ffffff;
+    line-height: 1.6;
+  }
+`;
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50%; }
@@ -251,113 +271,116 @@ const Roadmap = () => {
   };
 
   return (
-    <RoadmapContainer>
-      <BackButton to="/">← Back to Home</BackButton>
-      <Title>LAUNCHX ROADMAP</Title>
-      <RoadmapTimeline>
-        <Phase position="right">
-          <PhaseContent position="right">
-            <PhaseTitle>Phase 1: Launch of LAUNCHX $LAX</PhaseTitle>
-            <PhaseDescription>
-              • Initial token launch on XRPL<br />
-              • Token Creator Platform Release<br />
-              • Website and Documentation<br />
-              • Marketing Campaigns<br />
-              • Partnership Announcements
-            </PhaseDescription>
-            <PreviewContainer>
-              <PreviewButton onClick={() => handlePreview("Token Creator", 
-                "Our revolutionary token creator platform makes it simple to launch your token on XRPL. With automated TOML generation and AMM integration, you can create and launch your token in minutes.")}>
-                Token Creator
-              </PreviewButton>
-              <PreviewButton onClick={() => handlePreview("Initial Features", 
-                "Launch features include automated market maker (AMM) integration, token burning capabilities, and a seamless token creation process with built-in security features.")}>
-                Launch Features
-              </PreviewButton>
-            </PreviewContainer>
-          </PhaseContent>
-        </Phase>
+    <>
+      <GlobalStyle />
+      <RoadmapContainer>
+        <BackButton to="/">← Back to Home</BackButton>
+        <Title>LAUNCHX ROADMAP</Title>
+        <RoadmapTimeline>
+          <Phase position="right">
+            <PhaseContent position="right">
+              <PhaseTitle>Phase 1: Launch of LAUNCHX $LAX</PhaseTitle>
+              <PhaseDescription>
+                • Initial token launch on XRPL<br />
+                • Token Creator Platform Release<br />
+                • Website and Documentation<br />
+                • Marketing Campaigns<br />
+                • Partnership Announcements
+              </PhaseDescription>
+              <PreviewContainer>
+                <PreviewButton onClick={() => handlePreview("Token Creator", 
+                  "Our revolutionary token creator platform makes it simple to launch your token on XRPL. With automated TOML generation and AMM integration, you can create and launch your token in minutes.")}>
+                  Token Creator
+                </PreviewButton>
+                <PreviewButton onClick={() => handlePreview("Initial Features", 
+                  "Launch features include automated market maker (AMM) integration, token burning capabilities, and a seamless token creation process with built-in security features.")}>
+                  Launch Features
+                </PreviewButton>
+              </PreviewContainer>
+            </PhaseContent>
+          </Phase>
 
-        <Phase position="left">
-          <PhaseContent position="left">
-            <PhaseTitle>Phase 2: Auto Sniper Release</PhaseTitle>
-            <PhaseDescription>
-              • Auto Sniper Tool Launch<br />
-              • YouTube Channel Creation<br />
-              • Comprehensive Guide Videos<br />
-              • Enhanced Trading Features<br />
-              • Community Rewards Program
-            </PhaseDescription>
-            <PreviewContainer>
-              <PreviewButton onClick={() => handlePreview("Auto Sniper", 
-                "The Auto Sniper tool will revolutionize how you trade. Set custom parameters, execute precision trades, and never miss an opportunity with our advanced automation features.")}>
-                Auto Sniper
-              </PreviewButton>
-              <PreviewButton onClick={() => handlePreview("Trading Guides", 
-                "Access comprehensive video guides and tutorials showing you how to maximize your trading potential with our Auto Sniper tool and other platform features.")}>
-                Trading Guides
-              </PreviewButton>
-            </PreviewContainer>
-          </PhaseContent>
-        </Phase>
+          <Phase position="left">
+            <PhaseContent position="left">
+              <PhaseTitle>Phase 2: Auto Sniper Release</PhaseTitle>
+              <PhaseDescription>
+                • Auto Sniper Tool Launch<br />
+                • YouTube Channel Creation<br />
+                • Comprehensive Guide Videos<br />
+                • Enhanced Trading Features<br />
+                • Community Rewards Program
+              </PhaseDescription>
+              <PreviewContainer>
+                <PreviewButton onClick={() => handlePreview("Auto Sniper", 
+                  "The Auto Sniper tool will revolutionize how you trade. Set custom parameters, execute precision trades, and never miss an opportunity with our advanced automation features.")}>
+                  Auto Sniper
+                </PreviewButton>
+                <PreviewButton onClick={() => handlePreview("Trading Guides", 
+                  "Access comprehensive video guides and tutorials showing you how to maximize your trading potential with our Auto Sniper tool and other platform features.")}>
+                  Trading Guides
+                </PreviewButton>
+              </PreviewContainer>
+            </PhaseContent>
+          </Phase>
 
-        <Phase position="right">
-          <PhaseContent position="right">
-            <PhaseTitle>Phase 3: Copy Trader Platform</PhaseTitle>
-            <PhaseDescription>
-              • Copy Trader Platform Release<br />
-              • Advanced Trading Analytics<br />
-              • Portfolio Management Tools<br />
-              • Performance Tracking<br />
-              • Social Trading Features
-            </PhaseDescription>
-            <PreviewContainer>
-              <PreviewButton onClick={() => handlePreview("Copy Trading", 
-                "Our Copy Trader platform lets you automatically replicate successful trading strategies. Follow top performers, customize your copying parameters, and optimize your trading results.")}>
-                Copy Trading
-              </PreviewButton>
-              <PreviewButton onClick={() => handlePreview("Analytics", 
-                "Track your performance with advanced analytics. Monitor ROI, analyze trade history, and optimize your strategy with our comprehensive analytics dashboard.")}>
-                Analytics Suite
-              </PreviewButton>
-            </PreviewContainer>
-          </PhaseContent>
-        </Phase>
+          <Phase position="right">
+            <PhaseContent position="right">
+              <PhaseTitle>Phase 3: Copy Trader Platform</PhaseTitle>
+              <PhaseDescription>
+                • Copy Trader Platform Release<br />
+                • Advanced Trading Analytics<br />
+                • Portfolio Management Tools<br />
+                • Performance Tracking<br />
+                • Social Trading Features
+              </PhaseDescription>
+              <PreviewContainer>
+                <PreviewButton onClick={() => handlePreview("Copy Trading", 
+                  "Our Copy Trader platform lets you automatically replicate successful trading strategies. Follow top performers, customize your copying parameters, and optimize your trading results.")}>
+                  Copy Trading
+                </PreviewButton>
+                <PreviewButton onClick={() => handlePreview("Analytics", 
+                  "Track your performance with advanced analytics. Monitor ROI, analyze trade history, and optimize your strategy with our comprehensive analytics dashboard.")}>
+                  Analytics Suite
+                </PreviewButton>
+              </PreviewContainer>
+            </PhaseContent>
+          </Phase>
 
-        <Phase position="left">
-          <PhaseContent position="left">
-            <PhaseTitle>Phase 4: Web Apps & Expansion</PhaseTitle>
-            <PhaseDescription>
-              • Advanced Web Applications<br />
-              • Mobile App Development<br />
-              • Cross-chain Integration<br />
-              • Advanced Trading Bots<br />
-              • Institutional Tools
-            </PhaseDescription>
-            <PreviewContainer>
-              <PreviewButton onClick={() => handlePreview("Web Apps", 
-                "Coming soon: A suite of powerful web applications designed to enhance your trading experience. From advanced charting to automated trading systems.")}>
-                Web Apps
-              </PreviewButton>
-              <PreviewButton onClick={() => handlePreview("Trading Bots", 
-                "Our upcoming trading bots will offer customizable strategies, risk management features, and advanced automation capabilities for optimal trading performance.")}>
-                Trading Bots
-              </PreviewButton>
-            </PreviewContainer>
-          </PhaseContent>
-        </Phase>
-      </RoadmapTimeline>
+          <Phase position="left">
+            <PhaseContent position="left">
+              <PhaseTitle>Phase 4: Web Apps & Expansion</PhaseTitle>
+              <PhaseDescription>
+                • Advanced Web Applications<br />
+                • Mobile App Development<br />
+                • Cross-chain Integration<br />
+                • Advanced Trading Bots<br />
+                • Institutional Tools
+              </PhaseDescription>
+              <PreviewContainer>
+                <PreviewButton onClick={() => handlePreview("Web Apps", 
+                  "Coming soon: A suite of powerful web applications designed to enhance your trading experience. From advanced charting to automated trading systems.")}>
+                  Web Apps
+                </PreviewButton>
+                <PreviewButton onClick={() => handlePreview("Trading Bots", 
+                  "Our upcoming trading bots will offer customizable strategies, risk management features, and advanced automation capabilities for optimal trading performance.")}>
+                  Trading Bots
+                </PreviewButton>
+              </PreviewContainer>
+            </PhaseContent>
+          </Phase>
+        </RoadmapTimeline>
 
-      {previewContent && (
-        <PreviewModal onClick={closePreview}>
-          <PreviewContent onClick={e => e.stopPropagation()}>
-            <CloseButton onClick={closePreview}>×</CloseButton>
-            <h3>{previewContent.title}</h3>
-            <p>{previewContent.content}</p>
-          </PreviewContent>
-        </PreviewModal>
-      )}
-    </RoadmapContainer>
+        {previewContent && (
+          <PreviewModal onClick={closePreview}>
+            <PreviewContent onClick={e => e.stopPropagation()}>
+              <CloseButton onClick={closePreview}>×</CloseButton>
+              <h3>{previewContent.title}</h3>
+              <p>{previewContent.content}</p>
+            </PreviewContent>
+          </PreviewModal>
+        )}
+      </RoadmapContainer>
+    </>
   );
 };
 
