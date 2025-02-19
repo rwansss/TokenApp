@@ -1,6 +1,55 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { Link } from 'react-router-dom';
+
+const GlobalStyle = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
+  @import url('https://api.fontshare.com/v2/css?f[]=satoshi@700&display=swap');
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: #0a0d14;
+    color: #ffffff;
+    line-height: 1.6;
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0d1117;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #30363d;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00ff9d;
+  }
+`;
 
 const RoadmapContainer = styled.div`
   min-height: 100vh;
@@ -94,58 +143,61 @@ const PhaseCard = styled.div`
 
 function Roadmap() {
   return (
-    <RoadmapContainer>
-      <BackButton to="/">← Back to Home</BackButton>
-      <Header>
-        <h1>LAUNCHX Roadmap</h1>
-      </Header>
-      
-      <PhaseGrid>
-        <PhaseCard>
-          <h2>Phase 1: Launch of LAUNCHX $LAX</h2>
-          <ul>
-            <li>Initial token launch on XRPL</li>
-            <li>Token Creator Platform Release</li>
-            <li>Website and Documentation</li>
-            <li>Marketing Campaigns</li>
-            <li>Partnership Announcements</li>
-          </ul>
-        </PhaseCard>
+    <>
+      <GlobalStyle />
+      <RoadmapContainer>
+        <BackButton to="/">← Back to Home</BackButton>
+        <Header>
+          <h1>LAUNCHX Roadmap</h1>
+        </Header>
+        
+        <PhaseGrid>
+          <PhaseCard>
+            <h2>Phase 1: Launch of LAUNCHX $LAX</h2>
+            <ul>
+              <li>Initial token launch on XRPL</li>
+              <li>Token Creator Platform Release</li>
+              <li>Website and Documentation</li>
+              <li>Marketing Campaigns</li>
+              <li>Partnership Announcements</li>
+            </ul>
+          </PhaseCard>
 
-        <PhaseCard>
-          <h2>Phase 2: Auto Sniper Release</h2>
-          <ul>
-            <li>Auto Sniper Tool Launch</li>
-            <li>YouTube Channel Creation</li>
-            <li>Comprehensive Guide Videos</li>
-            <li>Enhanced Trading Features</li>
-            <li>Community Rewards Program</li>
-          </ul>
-        </PhaseCard>
+          <PhaseCard>
+            <h2>Phase 2: Auto Sniper Release</h2>
+            <ul>
+              <li>Auto Sniper Tool Launch</li>
+              <li>YouTube Channel Creation</li>
+              <li>Comprehensive Guide Videos</li>
+              <li>Enhanced Trading Features</li>
+              <li>Community Rewards Program</li>
+            </ul>
+          </PhaseCard>
 
-        <PhaseCard>
-          <h2>Phase 3: Copy Trader Platform</h2>
-          <ul>
-            <li>Copy Trader Platform Release</li>
-            <li>Advanced Trading Analytics</li>
-            <li>Portfolio Management Tools</li>
-            <li>Performance Tracking</li>
-            <li>Social Trading Features</li>
-          </ul>
-        </PhaseCard>
+          <PhaseCard>
+            <h2>Phase 3: Copy Trader Platform</h2>
+            <ul>
+              <li>Copy Trader Platform Release</li>
+              <li>Advanced Trading Analytics</li>
+              <li>Portfolio Management Tools</li>
+              <li>Performance Tracking</li>
+              <li>Social Trading Features</li>
+            </ul>
+          </PhaseCard>
 
-        <PhaseCard>
-          <h2>Phase 4: Web Apps & Expansion</h2>
-          <ul>
-            <li>Advanced Web Applications</li>
-            <li>Mobile App Development</li>
-            <li>Cross-chain Integration</li>
-            <li>Advanced Trading Bots</li>
-            <li>Institutional Tools</li>
-          </ul>
-        </PhaseCard>
-      </PhaseGrid>
-    </RoadmapContainer>
+          <PhaseCard>
+            <h2>Phase 4: Web Apps & Expansion</h2>
+            <ul>
+              <li>Advanced Web Applications</li>
+              <li>Mobile App Development</li>
+              <li>Cross-chain Integration</li>
+              <li>Advanced Trading Bots</li>
+              <li>Institutional Tools</li>
+            </ul>
+          </PhaseCard>
+        </PhaseGrid>
+      </RoadmapContainer>
+    </>
   );
 }
 
