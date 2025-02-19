@@ -973,11 +973,16 @@ function App() {
         }
 
         // Create the token with proper account
+        const currencyCode = formatCurrencyCode(tokenData.symbol); // Use formatCurrencyCode here
+        if (!currencyCode) {
+          throw new Error('Invalid currency code');
+        }
+
         const trustSetTx = {
           TransactionType: "TrustSet",
           Account: activeWallet.address,
           LimitAmount: {
-            currency: convertStringToHex(tokenData.symbol),
+            currency: currencyCode, // Use the formatted currency code
             issuer: activeWallet.address,
             value: tokenData.supply.toString()
           },
@@ -1000,7 +1005,7 @@ function App() {
           Account: activeWallet.address,
           Destination: activeWallet.address,
           Amount: {
-            currency: convertStringToHex(tokenData.symbol),
+            currency: currencyCode, // Use the formatted currency code
             value: tokenData.supply.toString(),
             issuer: activeWallet.address
           },
@@ -1643,7 +1648,7 @@ function App() {
                 <img src="/assets/logo.svg" alt="LaunchX Logo" />
               </h1>
               <p>Create your token on XRPL with just a few clicks</p>
-             <SocialLinks>
+ <SocialLinks>
                 <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     Telegram
