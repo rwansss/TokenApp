@@ -914,7 +914,7 @@ function App() {
       const a = document.createElement('a');
       a.href = url;
       a.download = `wallet_${wallet.address}.txt`;
-      a.textContent = `Download wallet_${wallet.address}.txt`;
+      a.textContent = `Download wallet file for ${wallet.address}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1671,7 +1671,7 @@ function App() {
                             const a = document.createElement('a');
                             a.href = url;
                             a.download = `wallet_${wallet.address}.txt`;
-                            a.textContent = `Download wallet_${wallet.address}.txt`;
+                            a.textContent = `Download wallet file for ${wallet.address}`;
                             document.body.appendChild(a);
                             a.click();
                             document.body.removeChild(a);
