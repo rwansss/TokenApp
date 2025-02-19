@@ -787,46 +787,6 @@ const ButtonContainer = styled.div`
   }
 `;
 
-// Add this new styled component with your other styled components
-const AddWalletModal = styled(ModalContent)`
-  max-width: 500px;
-  text-align: center;
-
-  .input-container {
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .error-message {
-    color: #ff6b6b;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-  }
-`;
-
-// Add these helper functions at the top with your other constants
-const formatCurrencyCode = (symbol) => {
-  if (!symbol) return null;
-  
-  // Remove any spaces and convert to uppercase
-  const code = symbol.trim().toUpperCase();
-  
-  // If it's a hex code (40 characters)
-  if (/^[0-9A-F]{40}$/i.test(code)) {
-    return code.toUpperCase();
-  }
-  
-  // For standard 3-4 character currency codes
-  if (code.length < 3 || code.length > 4) {
-    throw new Error('Currency code must be 3-4 characters');
-  }
-  
-  return code;
-};
-
 function App() {
   const [wallets, setWallets] = useState([]);
   const [activeWallet, setActiveWallet] = useState(null);
@@ -1768,6 +1728,19 @@ function App() {
                   className="roadmap-button"
                 >
                   <span>
+                    Roadmap
+                  </span>
+                </SocialButton>
+              </SocialLinks>
+                <SocialButton 
+                  to="/roadmap" 
+                  isInternal 
+                  className="roadmap-button"
+                >
+                  <span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M21 3h-6.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H3c-.55 0-1 .45-1 1s.45 1 1 1h18c.55 0 1-.45 1-1s-.45-1-1-1zM12 3c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM4 19V7h16v12c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2-2zm14-2v-2H6v2h12z"/>
+                    </svg>
                     Roadmap
                   </span>
                 </SocialButton>
