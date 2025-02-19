@@ -12,13 +12,16 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
   }
 
-  body {
+  html, body {
     margin: 0;
     padding: 0;
+    min-height: 100vh;
+    width: 100%;
     font-family: 'Rajdhani', sans-serif;
-    background: #0a0d14;
+    background: linear-gradient(135deg, #0a0d14 0%, #1a1f2c 100%);
     color: #ffffff;
     line-height: 1.6;
+    overflow-x: hidden;
   }
 `;
 
@@ -85,6 +88,9 @@ const RoadmapTimeline = styled.div`
   max-width: 1200px;
   margin: 4rem auto;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 
   &::before {
     content: '';
@@ -101,18 +107,17 @@ const RoadmapTimeline = styled.div`
 const Phase = styled.div`
   display: flex;
   justify-content: ${props => props.position === 'right' ? 'flex-start' : 'flex-end'};
-  margin: 4rem 0;
   width: 100%;
   position: relative;
+  padding: 2rem 0;
 `;
 
 const PhaseContent = styled.div`
   width: 45%;
   padding: 2rem;
-  background: rgba(22, 27, 34, 0.95);
+  background: #161b22;
   border-radius: 16px;
   position: relative;
-  animation: ${float} 6s ease-in-out infinite;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 255, 157, 0.2);
   transition: all 0.3s ease;
@@ -127,28 +132,32 @@ const PhaseContent = styled.div`
     position: absolute;
     top: 50%;
     ${props => props.position === 'right' ? 'left: -15px;' : 'right: -15px;'}
-    width: 30px;
-    height: 30px;
+    width: 15px;
+    height: 15px;
     background: #00ff9d;
     border-radius: 50%;
     transform: translateY(-50%);
-    animation: ${glowPulse} 2s infinite;
+    box-shadow: 0 0 15px rgba(0, 255, 157, 0.5);
   }
 `;
 
 const PhaseTitle = styled.h3`
   color: #00ff9d;
   font-size: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-family: 'Satoshi', sans-serif;
   font-weight: 700;
 `;
 
-const PhaseDescription = styled.p`
+const PhaseDescription = styled.div`
   color: #8b949e;
   margin-bottom: 1.5rem;
   font-size: 1.1rem;
   line-height: 1.6;
+  
+  div {
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const PreviewContainer = styled.div`
@@ -192,7 +201,7 @@ const PreviewModal = styled.div`
 `;
 
 const PreviewContent = styled.div`
-  background: rgba(22, 27, 34, 0.95);
+  background: #161b22;
   border-radius: 20px;
   padding: 2.5rem;
   max-width: 700px;
@@ -281,11 +290,11 @@ const Roadmap = () => {
             <PhaseContent position="right">
               <PhaseTitle>Phase 1: Launch of LAUNCHX $LAX</PhaseTitle>
               <PhaseDescription>
-                • Initial token launch on XRPL<br />
-                • Token Creator Platform Release<br />
-                • Website and Documentation<br />
-                • Marketing Campaigns<br />
-                • Partnership Announcements
+                <div>• Initial token launch on XRPL</div>
+                <div>• Token Creator Platform Release</div>
+                <div>• Website and Documentation</div>
+                <div>• Marketing Campaigns</div>
+                <div>• Partnership Announcements</div>
               </PhaseDescription>
               <PreviewContainer>
                 <PreviewButton onClick={() => handlePreview("Token Creator", 
@@ -304,11 +313,11 @@ const Roadmap = () => {
             <PhaseContent position="left">
               <PhaseTitle>Phase 2: Auto Sniper Release</PhaseTitle>
               <PhaseDescription>
-                • Auto Sniper Tool Launch<br />
-                • YouTube Channel Creation<br />
-                • Comprehensive Guide Videos<br />
-                • Enhanced Trading Features<br />
-                • Community Rewards Program
+                <div>• Auto Sniper Tool Launch</div>
+                <div>• YouTube Channel Creation</div>
+                <div>• Comprehensive Guide Videos</div>
+                <div>• Enhanced Trading Features</div>
+                <div>• Community Rewards Program</div>
               </PhaseDescription>
               <PreviewContainer>
                 <PreviewButton onClick={() => handlePreview("Auto Sniper", 
@@ -327,11 +336,11 @@ const Roadmap = () => {
             <PhaseContent position="right">
               <PhaseTitle>Phase 3: Copy Trader Platform</PhaseTitle>
               <PhaseDescription>
-                • Copy Trader Platform Release<br />
-                • Advanced Trading Analytics<br />
-                • Portfolio Management Tools<br />
-                • Performance Tracking<br />
-                • Social Trading Features
+                <div>• Copy Trader Platform Release</div>
+                <div>• Advanced Trading Analytics</div>
+                <div>• Portfolio Management Tools</div>
+                <div>• Performance Tracking</div>
+                <div>• Social Trading Features</div>
               </PhaseDescription>
               <PreviewContainer>
                 <PreviewButton onClick={() => handlePreview("Copy Trading", 
@@ -350,11 +359,11 @@ const Roadmap = () => {
             <PhaseContent position="left">
               <PhaseTitle>Phase 4: Web Apps & Expansion</PhaseTitle>
               <PhaseDescription>
-                • Advanced Web Applications<br />
-                • Mobile App Development<br />
-                • Cross-chain Integration<br />
-                • Advanced Trading Bots<br />
-                • Institutional Tools
+                <div>• Advanced Web Applications</div>
+                <div>• Mobile App Development</div>
+                <div>• Cross-chain Integration</div>
+                <div>• Advanced Trading Bots</div>
+                <div>• Institutional Tools</div>
               </PhaseDescription>
               <PreviewContainer>
                 <PreviewButton onClick={() => handlePreview("Web Apps", 
