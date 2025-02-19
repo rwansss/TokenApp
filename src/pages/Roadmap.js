@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { Link } from 'react-router-dom';
 
-const GlobalStyle = createGlobalStyle`
+const GlobalStyle = styled.div`
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
   @import url('https://api.fontshare.com/v2/css?f[]=satoshi@700&display=swap');
   
@@ -51,119 +51,153 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const RoadmapContainer = styled.div`
-  min-height: 100vh;
-  background: #0a0d14;
-  color: #ffffff;
-  padding: 4rem 2rem;
-  position: relative;
-  overflow: hidden;
+const gradientAnimation = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 `;
 
-const Header = styled.header`
-  text-align: center;
-  margin-bottom: 6rem;
-  
-  h1 {
-    font-family: 'Satoshi', sans-serif;
-    font-size: 4rem;
-    color: #00ff9d;
-    text-transform: uppercase;
-    letter-spacing: 4px;
+const glowPulse = keyframes`
+  0% { box-shadow: 0 0 5px rgba(0, 255, 157, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(0, 255, 157, 0.4); }
+  100% { box-shadow: 0 0 5px rgba(0, 255, 157, 0.2); }
+`;
+
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const RoadmapContainer = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0d14 0%, #1a1f2c 100%);
+  color: #ffffff;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Rajdhani', sans-serif;
+  margin: 0;
+  width: 100%;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00ff9d, #00a3ff);
+    background-size: 200% 100%;
+    animation: ${gradientAnimation} 4s linear infinite;
   }
 `;
 
-const Timeline = styled.div`
+const Title = styled.h1`
+  font-family: 'Satoshi', sans-serif;
+  font-size: 4rem;
+  text-align: center;
+  margin: 2rem 0;
+  background: linear-gradient(90deg, #00ff9d, #00a3ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+`;
+
+const RoadmapTimeline = styled.div`
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 4rem auto;
   position: relative;
 
   &::before {
     content: '';
     position: absolute;
-    left: 50%;
     top: 0;
-    bottom: 0;
-    width: 2px;
-    background: #00ff9d;
+    left: 50%;
     transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, #00ff9d, #00a3ff);
   }
 `;
 
 const Phase = styled.div`
   display: flex;
-  justify-content: ${props => props.right ? 'flex-end' : 'flex-start'};
-  margin-bottom: 8rem;
-  position: relative;
+  justify-content: ${props => props.position === 'right' ? 'flex-start' : 'flex-end'};
+  margin: 4rem 0;
   width: 100%;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: ${props => props.right ? 'auto' : '50%'};
-    right: ${props => props.right ? '50%' : 'auto'};
-    top: 0;
-    width: 16px;
-    height: 16px;
-    background: #00ff9d;
-    border-radius: 50%;
-    transform: translateX(${props => props.right ? '50%' : '-50%'});
-    box-shadow: 0 0 20px rgba(0, 255, 157, 0.5);
-    z-index: 2;
-  }
+  position: relative;
 `;
 
 const PhaseContent = styled.div`
   width: 45%;
-  background: rgba(0, 255, 157, 0.05);
-  border: 1px solid rgba(0, 255, 157, 0.2);
-  border-radius: 12px;
   padding: 2rem;
+  background: rgba(22, 27, 34, 0.95);
+  border-radius: 16px;
   position: relative;
-`;
+  animation: ${float} 6s ease-in-out infinite;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 157, 0.2);
+  transition: all 0.3s ease;
 
-const PhaseTitle = styled.h2`
-  color: #00ff9d;
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  font-family: 'Satoshi', sans-serif;
-`;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 30px rgba(0, 255, 157, 0.2);
+  }
 
-const FeatureList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  li {
-    color: #8b949e;
-    margin-bottom: 0.8rem;
-    padding-left: 1.5rem;
-    position: relative;
-
-    &::before {
-      content: '•';
-      position: absolute;
-      left: 0;
-      color: #00ff9d;
-    }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    ${props => props.position === 'right' ? 'left: -15px;' : 'right: -15px;'}
+    width: 30px;
+    height: 30px;
+    background: #00ff9d;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    animation: ${glowPulse} 2s infinite;
   }
 `;
 
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
+const PhaseTitle = styled.h3`
+  color: #00ff9d;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 700;
 `;
 
-const FeatureButton = styled.button`
+const PhaseDescription = styled.p`
+  color: #8b949e;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+`;
+
+const PreviewContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+`;
+
+const PreviewButton = styled.button`
+  padding: 0.8rem 1.5rem;
   background: rgba(0, 255, 157, 0.1);
-  border: 1px solid #00ff9d;
+  border: 1px solid rgba(0, 255, 157, 0.2);
+  border-radius: 8px;
   color: #00ff9d;
-  padding: 0.5rem 1.5rem;
-  border-radius: 20px;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
 
   &:hover {
     background: rgba(0, 255, 157, 0.2);
@@ -171,22 +205,60 @@ const FeatureButton = styled.button`
   }
 `;
 
-const BackgroundGraph = styled.div`
+const PreviewModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: ${fadeIn} 0.3s ease;
+`;
+
+const PreviewContent = styled.div`
+  background: rgba(22, 27, 34, 0.95);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 700px;
+  width: 90%;
+  position: relative;
+  border: 1px solid rgba(0, 255, 157, 0.2);
+  animation: ${fadeIn} 0.4s ease;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+  h3 {
+    color: #00ff9d;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  p {
+    color: #8b949e;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+`;
+
+const CloseButton = styled.button`
   position: absolute;
-  top: 50%;
-  right: 10%;
-  transform: translateY(-50%);
-  width: 200px;
-  height: 200px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-top: 2px solid #ff0000;
-    border-right: 2px solid #ff0000;
-    transform: rotate(45deg);
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #00ff9d;
   }
 `;
 
@@ -209,96 +281,15 @@ const BackButton = styled(Link)`
   }
 `;
 
-// Add Modal components
-const Modal = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 13, 20, 0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background: #161b22;
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 600px;
-  width: 90%;
-  position: relative;
-  border: 1px solid rgba(0, 255, 157, 0.2);
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: transparent;
-  border: none;
-  color: #8b949e;
-  font-size: 1.5rem;
-  cursor: pointer;
-  
-  &:hover {
-    color: #00ff9d;
-  }
-`;
-
-const ModalTitle = styled.h3`
-  color: #00ff9d;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-`;
-
-const ModalText = styled.p`
-  color: #8b949e;
-  line-height: 1.6;
-`;
-
 function Roadmap() {
-  const [modalContent, setModalContent] = useState(null);
+  const [previewContent, setPreviewContent] = useState(null);
 
-  const modalContents = {
-    'Token Creator': {
-      title: 'Token Creator Platform',
-      content: 'Create your own token on XRPL with just a few clicks. Our platform provides an intuitive interface for token creation, customization, and deployment.'
-    },
-    'Launch Features': {
-      title: 'Launch Features',
-      content: 'Initial features include token creation, liquidity management, and automated market making capabilities.'
-    },
-    'Auto Sniper': {
-      title: 'Auto Sniper Tool',
-      content: 'Advanced trading tool that automatically detects and executes trades based on predefined criteria and market conditions.'
-    },
-    'Trading Guides': {
-      title: 'Trading Guides',
-      content: 'Comprehensive guides and tutorials for both beginners and advanced traders.'
-    },
-    'Copy Trading': {
-      title: 'Copy Trading Platform',
-      content: 'Follow and automatically replicate the trades of successful traders on the platform.'
-    },
-    'Analytics Suite': {
-      title: 'Analytics Suite',
-      content: 'Advanced analytics tools for tracking performance, market analysis, and portfolio management.'
-    },
-    'Web Apps': {
-      title: 'Web Applications',
-      content: 'Suite of web-based tools for trading, portfolio management, and market analysis.'
-    },
-    'Trading Bots': {
-      title: 'Trading Bots',
-      content: 'Automated trading bots with customizable strategies and risk management.'
-    }
+  const handlePreview = (title, content) => {
+    setPreviewContent({ title, content });
   };
 
-  const handleButtonClick = (feature) => {
-    setModalContent(modalContents[feature]);
+  const closePreview = () => {
+    setPreviewContent(null);
   };
 
   return (
@@ -306,106 +297,109 @@ function Roadmap() {
       <GlobalStyle />
       <RoadmapContainer>
         <BackButton to="/">← Back to Home</BackButton>
-        <Header>
-          <h1>LAUNCHX ROADMAP</h1>
-        </Header>
-        
-        <BackgroundGraph />
-        
-        <Timeline>
-          <Phase>
-            <PhaseContent>
+        <Title>LAUNCHX ROADMAP</Title>
+        <RoadmapTimeline>
+          <Phase position="right">
+            <PhaseContent position="right">
               <PhaseTitle>Phase 1: Launch of LAUNCHX $LAX</PhaseTitle>
-              <FeatureList>
-                <li>Initial token launch on XRPL</li>
-                <li>Token Creator Platform Release</li>
-                <li>Website and Documentation</li>
-                <li>Marketing Campaigns</li>
-                <li>Partnership Announcements</li>
-              </FeatureList>
-              <ButtonGroup>
-                <FeatureButton onClick={() => handleButtonClick('Token Creator')}>
+              <PhaseDescription>
+                • Initial token launch on XRPL<br />
+                • Token Creator Platform Release<br />
+                • Website and Documentation<br />
+                • Marketing Campaigns<br />
+                • Partnership Announcements
+              </PhaseDescription>
+              <PreviewContainer>
+                <PreviewButton onClick={() => handlePreview("Token Creator", 
+                  "Our revolutionary token creator platform makes it simple to launch your token on XRPL. With automated TOML generation and AMM integration, you can create and launch your token in minutes.")}>
                   Token Creator
-                </FeatureButton>
-                <FeatureButton onClick={() => handleButtonClick('Launch Features')}>
+                </PreviewButton>
+                <PreviewButton onClick={() => handlePreview("Launch Features", 
+                  "Launch features include automated market maker (AMM) integration, token burning capabilities, and a seamless token creation process with built-in security features.")}>
                   Launch Features
-                </FeatureButton>
-              </ButtonGroup>
+                </PreviewButton>
+              </PreviewContainer>
             </PhaseContent>
           </Phase>
 
-          <Phase right>
-            <PhaseContent>
+          <Phase position="left">
+            <PhaseContent position="left">
               <PhaseTitle>Phase 2: Auto Sniper Release</PhaseTitle>
-              <FeatureList>
-                <li>Auto Sniper Tool Launch</li>
-                <li>YouTube Channel Creation</li>
-                <li>Comprehensive Guide Videos</li>
-                <li>Enhanced Trading Features</li>
-                <li>Community Rewards Program</li>
-              </FeatureList>
-              <ButtonGroup>
-                <FeatureButton onClick={() => handleButtonClick('Auto Sniper')}>
+              <PhaseDescription>
+                • Auto Sniper Tool Launch<br />
+                • YouTube Channel Creation<br />
+                • Comprehensive Guide Videos<br />
+                • Enhanced Trading Features<br />
+                • Community Rewards Program
+              </PhaseDescription>
+              <PreviewContainer>
+                <PreviewButton onClick={() => handlePreview("Auto Sniper", 
+                  "The Auto Sniper tool will revolutionize how you trade. Set custom parameters, execute precision trades, and never miss an opportunity with our advanced automation features.")}>
                   Auto Sniper
-                </FeatureButton>
-                <FeatureButton onClick={() => handleButtonClick('Trading Guides')}>
+                </PreviewButton>
+                <PreviewButton onClick={() => handlePreview("Trading Guides", 
+                  "Access comprehensive video guides and tutorials showing you how to maximize your trading potential with our Auto Sniper tool and other platform features.")}>
                   Trading Guides
-                </FeatureButton>
-              </ButtonGroup>
+                </PreviewButton>
+              </PreviewContainer>
             </PhaseContent>
           </Phase>
 
-          <Phase>
-            <PhaseContent>
+          <Phase position="right">
+            <PhaseContent position="right">
               <PhaseTitle>Phase 3: Copy Trader Platform</PhaseTitle>
-              <FeatureList>
-                <li>Copy Trader Platform Release</li>
-                <li>Advanced Trading Analytics</li>
-                <li>Portfolio Management Tools</li>
-                <li>Performance Tracking</li>
-                <li>Social Trading Features</li>
-              </FeatureList>
-              <ButtonGroup>
-                <FeatureButton onClick={() => handleButtonClick('Copy Trading')}>
+              <PhaseDescription>
+                • Copy Trader Platform Release<br />
+                • Advanced Trading Analytics<br />
+                • Portfolio Management Tools<br />
+                • Performance Tracking<br />
+                • Social Trading Features
+              </PhaseDescription>
+              <PreviewContainer>
+                <PreviewButton onClick={() => handlePreview("Copy Trading", 
+                  "Our Copy Trader platform lets you automatically replicate successful trading strategies. Follow top performers, customize your copying parameters, and optimize your trading results.")}>
                   Copy Trading
-                </FeatureButton>
-                <FeatureButton onClick={() => handleButtonClick('Analytics Suite')}>
+                </PreviewButton>
+                <PreviewButton onClick={() => handlePreview("Analytics", 
+                  "Track your performance with advanced analytics. Monitor ROI, analyze trade history, and optimize your strategy with our comprehensive analytics dashboard.")}>
                   Analytics Suite
-                </FeatureButton>
-              </ButtonGroup>
+                </PreviewButton>
+              </PreviewContainer>
             </PhaseContent>
           </Phase>
 
-          <Phase right>
-            <PhaseContent>
+          <Phase position="left">
+            <PhaseContent position="left">
               <PhaseTitle>Phase 4: Web Apps & Expansion</PhaseTitle>
-              <FeatureList>
-                <li>Advanced Web Applications</li>
-                <li>Mobile App Development</li>
-                <li>Cross-chain Integration</li>
-                <li>Advanced Trading Bots</li>
-                <li>Institutional Tools</li>
-              </FeatureList>
-              <ButtonGroup>
-                <FeatureButton onClick={() => handleButtonClick('Web Apps')}>
+              <PhaseDescription>
+                • Advanced Web Applications<br />
+                • Mobile App Development<br />
+                • Cross-chain Integration<br />
+                • Advanced Trading Bots<br />
+                • Institutional Tools
+              </PhaseDescription>
+              <PreviewContainer>
+                <PreviewButton onClick={() => handlePreview("Web Apps", 
+                  "Coming soon: A suite of powerful web applications designed to enhance your trading experience. From advanced charting to automated trading systems.")}>
                   Web Apps
-                </FeatureButton>
-                <FeatureButton onClick={() => handleButtonClick('Trading Bots')}>
+                </PreviewButton>
+                <PreviewButton onClick={() => handlePreview("Trading Bots", 
+                  "Our upcoming trading bots will offer customizable strategies, risk management features, and advanced automation capabilities for optimal trading performance.")}>
                   Trading Bots
-                </FeatureButton>
-              </ButtonGroup>
+                </PreviewButton>
+              </PreviewContainer>
             </PhaseContent>
           </Phase>
-        </Timeline>
+        </RoadmapTimeline>
 
-        {modalContent && (
-          <Modal onClick={() => setModalContent(null)}>
-            <ModalContent onClick={e => e.stopPropagation()}>
-              <CloseButton onClick={() => setModalContent(null)}>×</CloseButton>
-              <ModalTitle>{modalContent.title}</ModalTitle>
-              <ModalText>{modalContent.content}</ModalText>
-            </ModalContent>
-          </Modal>
+        {previewContent && (
+          <PreviewModal onClick={closePreview}>
+            <PreviewContent onClick={e => e.stopPropagation()}>
+              <CloseButton onClick={closePreview}>×</CloseButton>
+              <h3>{previewContent.title}</h3>
+              <p>{previewContent.content}</p>
+            </PreviewContent>
+          </PreviewModal>
         )}
       </RoadmapContainer>
     </>
