@@ -776,6 +776,26 @@ const ButtonContainer = styled.div`
   margin-top: 1.5rem;
 `;
 
+// Add this new styled component with your other styled components
+const AddWalletModal = styled(ModalContent)`
+  max-width: 500px;
+  text-align: center;
+
+  .input-container {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .error-message {
+    color: #ff6b6b;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+`;
+
 function App() {
   const [wallets, setWallets] = useState([]);
   const [activeWallet, setActiveWallet] = useState(null);
@@ -810,6 +830,9 @@ function App() {
   const [errorModalContent, setErrorModalContent] = useState({ title: '', message: '', guide: null });
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawPercentage, setWithdrawPercentage] = useState(100);
+  const [showAddWalletModal, setShowAddWalletModal] = useState(false);
+  const [seedInput, setSeedInput] = useState('');
+  const [addWalletError, setAddWalletError] = useState('');
 
   const iconInputRef = useRef(null);
   const bannerInputRef = useRef(null);
@@ -1564,25 +1587,37 @@ function App() {
 
   // Add this new function after your existing state declarations
   const addWallet = () => {
-    const seed = prompt("Enter your wallet seed phrase:");
-    if (!seed) return;
+    setShowAddWalletModal(true);
+    setSeedInput('');
+    setAddWalletError('');
+  };
 
+  // Add this new function to handle the wallet addition
+  const handleAddWallet = () => {
     try {
-      const wallet = Wallet.fromSeed(seed);
+      if (!seedInput.trim()) {
+        setAddWalletError('Please enter a seed phrase');
+        return;
+      }
+
+      const wallet = Wallet.fromSeed(seedInput.trim());
       if (wallets.length >= 2) {
-        alert('Maximum wallet limit reached (2)');
+        setAddWalletError('Maximum wallet limit reached (2)');
         return;
       }
       if (wallets.some(w => w.address === wallet.address)) {
-        alert('This wallet is already added');
+        setAddWalletError('This wallet is already added');
         return;
       }
 
       setWallets([...wallets, wallet]);
       setMessage('Wallet added successfully');
+      setShowAddWalletModal(false);
+      setSeedInput('');
+      setAddWalletError('');
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      alert('Invalid seed phrase. Please check and try again.');
+      setAddWalletError('Invalid seed phrase. Please check and try again.');
     }
   };
 
@@ -2113,6 +2148,34 @@ function App() {
                     </Button>
                   </ButtonContainer>
                 </WithdrawModal>
+              </ModalOverlay>
+            )}
+
+            {showAddWalletModal && (
+              <ModalOverlay onClick={() => setShowAddWalletModal(false)}>
+                <AddWalletModal onClick={e => e.stopPropagation()}>
+                  <Title>Add Existing Wallet</Title>
+                  
+                  <div className="input-container">
+                    <Input
+                      type="text"
+                      value={seedInput}
+                      onChange={(e) => setSeedInput(e.target.value)}
+                      placeholder="Enter your wallet seed phrase"
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddWallet()}
+                    />
+                    {addWalletError && <div className="error-message">{addWalletError}</div>}
+                  </div>
+
+                  <ButtonContainer>
+                    <Button onClick={() => setShowAddWalletModal(false)}>
+                      Cancel
+                    </Button>
+                    <Button primary onClick={handleAddWallet}>
+                      Add Wallet
+                    </Button>
+                  </ButtonContainer>
+                </AddWalletModal>
               </ModalOverlay>
             )}
     </AppContainer>
