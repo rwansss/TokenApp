@@ -1686,17 +1686,15 @@ function App() {
       <Routes>
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/" element={
-    <AppContainer>
+          <AppContainer>
             <GlobalStyle />
-      <Header>
+            <Header>
               <h1>
                 LAUNCHX
                 <img src="/assets/logo.svg" alt="LaunchX Logo" />
               </h1>
               <p>Create your token on XRPL with just a few clicks</p>
-              <p className="highlight">CONTROL YOUR OWN LIQUIDITY!</p>
-              <p>With every token created 50% of the fee immediately swaps for $LAX and burns the tokens</p>
-  <SocialLinks>
+<SocialLinks>
                 <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     Telegram
@@ -1732,7 +1730,7 @@ function App() {
                   </span>
                 </SocialButton>
               </SocialLinks>
-      </Header>
+            </Header>
 
             <MainContent>
               <div>
@@ -2227,7 +2225,7 @@ function App() {
                 </ModalContent>
               </ModalOverlay>
             )}
-    </AppContainer>
+          </AppContainer>
         } />
       </Routes>
     </Router>
