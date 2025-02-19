@@ -9,7 +9,7 @@ import { HostingGuideModal } from './components/HostingGuideModal';
 import Roadmap from './pages/Roadmap';
 
 // Configurable fee settings
-const CREATOR_FEE = 10; // Your fee in XRP
+const CREATOR_FEE = 0; // Your fee in XRP
 const ACCOUNT_RESERVE = 1; // Base reserve per account
 const TRUSTLINE_RESERVE = 0.2; // Reserve per trustline
 const AMM_POOL_RESERVE = 2; // Reserve for AMM pool
@@ -958,45 +958,47 @@ function App() {
       setLoading(true);
       setMessage('Initializing token creation...');
 
+      // Use testnet client
       const client = new Client('wss://s.altnet.rippletest.net:51233');
       await client.connect();
       
       try {
-        // Verify account exists and is funded
-        const accountInfo = await client.request({
-          command: 'account_info',
-          account: activeWallet.address
-        });
+        // First, set the DefaultRipple flag
+        const accountSetTx = {
+          TransactionType: "AccountSet",
+          Account: activeWallet.address,
+          SetFlag: 8, // Enable rippling
+          Fee: "12"
+        };
 
-        if (!accountInfo.result || !accountInfo.result.account_data) {
-          throw new Error('Account not properly initialized');
-        }
+        const preparedSet = await client.autofill(accountSetTx);
+        const signedSet = activeWallet.sign(preparedSet);
+        await client.submitAndWait(signedSet.tx_blob);
 
-        // Create the token with proper account
-        const currencyCode = formatCurrencyCode(tokenData.symbol); // Use formatCurrencyCode here
+        // Create the token
+        const currencyCode = formatCurrencyCode(tokenData.symbol);
         if (!currencyCode) {
           throw new Error('Invalid currency code');
         }
 
+        // Create trustline for the token
         const trustSetTx = {
           TransactionType: "TrustSet",
           Account: activeWallet.address,
           LimitAmount: {
-            currency: currencyCode, // Use the formatted currency code
+            currency: currencyCode,
             issuer: activeWallet.address,
             value: tokenData.supply.toString()
           },
-          Fee: "12",
-          Sequence: accountInfo.result.account_data.Sequence
+          Fee: "12"
         };
 
-        setMessage('Creating token...');
-        const prepared = await client.autofill(trustSetTx);
-        const signed = activeWallet.sign(prepared);
-        const trustSetResult = await client.submitAndWait(signed.tx_blob);
+        const preparedTrust = await client.autofill(trustSetTx);
+        const signedTrust = activeWallet.sign(preparedTrust);
+        const trustResult = await client.submitAndWait(signedTrust.tx_blob);
 
-        if (trustSetResult.result.meta.TransactionResult !== "tesSUCCESS") {
-          throw new Error(`Token creation failed: ${trustSetResult.result.meta.TransactionResult}`);
+        if (trustResult.result.meta.TransactionResult !== "tesSUCCESS") {
+          throw new Error(`Trust set failed: ${trustResult.result.meta.TransactionResult}`);
         }
 
         // Issue the token
@@ -1005,7 +1007,7 @@ function App() {
           Account: activeWallet.address,
           Destination: activeWallet.address,
           Amount: {
-            currency: currencyCode, // Use the formatted currency code
+            currency: currencyCode,
             value: tokenData.supply.toString(),
             issuer: activeWallet.address
           },
@@ -1648,7 +1650,7 @@ function App() {
                 <img src="/assets/logo.svg" alt="LaunchX Logo" />
               </h1>
               <p>Create your token on XRPL with just a few clicks</p>
- <SocialLinks>
+<SocialLinks>
                 <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     Telegram
