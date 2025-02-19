@@ -2153,7 +2153,7 @@ function App() {
 
             {showAddWalletModal && (
               <ModalOverlay onClick={() => setShowAddWalletModal(false)}>
-                <AddWalletModal onClick={e => e.stopPropagation()}>
+                <AddWalletModal onClick={(e) => e.stopPropagation()}>
                   <Title>Add Existing Wallet</Title>
                   
                   <div className="input-container">
@@ -2162,16 +2162,23 @@ function App() {
                       value={seedInput}
                       onChange={(e) => setSeedInput(e.target.value)}
                       placeholder="Enter your wallet seed phrase"
-                      onKeyPress={(e) => e.key === 'Enter' && handleAddWallet()}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddWallet()}
+                      autoFocus
                     />
                     {addWalletError && <div className="error-message">{addWalletError}</div>}
                   </div>
 
                   <ButtonContainer>
-                    <Button onClick={() => setShowAddWalletModal(false)}>
+                    <Button onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAddWalletModal(false);
+                    }}>
                       Cancel
                     </Button>
-                    <Button primary onClick={handleAddWallet}>
+                    <Button primary onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddWallet();
+                    }}>
                       Add Wallet
                     </Button>
                   </ButtonContainer>
