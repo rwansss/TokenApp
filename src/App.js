@@ -1617,7 +1617,7 @@ function App() {
                     Discord
                   </span>
                 </SocialButton>
-                <SocialButton href="https://firstledger.net/" target="_blank" rel="noopener noreferrer">
+                <SocialButton href="https://firstledger.net/token/rwqGqyU1aXzoyegsJRueick6CQ9JggfGSe/LAX" target="_blank" rel="noopener noreferrer">
                   <span>
                     Buy $LAX
                   </span>
