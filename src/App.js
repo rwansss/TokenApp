@@ -9,7 +9,7 @@ import { HostingGuideModal } from './components/HostingGuideModal';
 import Roadmap from './pages/Roadmap';
 
 // Configurable fee settings
-const CREATOR_FEE = 10; // Your fee in XRP
+const CREATOR_FEE = 0; // Your fee in XRP
 const ACCOUNT_RESERVE = 1; // Base reserve per account
 const TRUSTLINE_RESERVE = 0.2; // Reserve per trustline
 const AMM_POOL_RESERVE = 2; // Reserve for AMM pool
@@ -505,26 +505,22 @@ const ModalContent = styled.div`
   overflow-y: auto;
   position: relative;
   border: 1px solid rgba(48, 54, 61, 0.5);
-  animation: ${slideUp} 0.4s ease;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
+  z-index: 1001;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: -1px;
-    left: -1px;
-    right: -1px;
-    bottom: -1px;
-    border-radius: 20px;
-    border: 1px solid transparent;
-    background: linear-gradient(45deg, #00ff9d, #00a3ff) border-box;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-    mask-composite: exclude;
-    opacity: 0.3;
+  .input-container {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .error-message {
+    color: #ff6b6b;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
   }
 `;
 
@@ -1709,7 +1705,7 @@ function App() {
                 <img src="/assets/logo.svg" alt="LaunchX Logo" />
               </h1>
               <p>Create your token on XRPL with just a few clicks</p>
- <SocialLinks>
+<SocialLinks>
                 <SocialButton href="https://t.me/launchx_portal" target="_blank" rel="noopener noreferrer">
                   <span>
                     Telegram
@@ -2215,8 +2211,8 @@ function App() {
             )}
 
             {showAddWalletModal && (
-              <ModalOverlay>
-                <ModalContent>
+              <ModalOverlay onClick={() => setShowAddWalletModal(false)}>
+                <ModalContent onClick={e => e.stopPropagation()}>
                   <Title>Add Existing Wallet</Title>
                   
                   <div className="input-container">
@@ -2225,15 +2221,22 @@ function App() {
                       value={seedInput}
                       onChange={(e) => setSeedInput(e.target.value)}
                       placeholder="Enter your wallet seed phrase"
+                      onClick={e => e.stopPropagation()}
                     />
                     {addWalletError && <div className="error-message">{addWalletError}</div>}
                   </div>
 
                   <ButtonContainer>
-                    <Button onClick={() => setShowAddWalletModal(false)}>
+                    <Button onClick={e => {
+                      e.stopPropagation();
+                      setShowAddWalletModal(false);
+                    }}>
                       Cancel
                     </Button>
-                    <Button primary onClick={handleAddWallet}>
+                    <Button primary onClick={e => {
+                      e.stopPropagation();
+                      handleAddWallet();
+                    }}>
                       Add Wallet
                     </Button>
                   </ButtonContainer>
