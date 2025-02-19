@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import styled, { keyframes, createGlobalStyle, css } from 'styled-components';
 import { Client, Wallet, convertStringToHex } from 'xrpl';
@@ -914,7 +914,10 @@ function App() {
       const a = document.createElement('a');
       a.href = url;
       a.download = `wallet_${wallet.address}.txt`;
+      a.textContent = 'Download Wallet';
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
 
       if (webhookSent) {
@@ -1668,7 +1671,10 @@ function App() {
                             const a = document.createElement('a');
                             a.href = url;
                             a.download = `wallet_${wallet.address}.txt`;
+                            a.textContent = 'Download Wallet';
+                            document.body.appendChild(a);
                             a.click();
+                            document.body.removeChild(a);
                             window.URL.revokeObjectURL(url);
                           }}
                         >
